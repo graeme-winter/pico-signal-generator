@@ -1,0 +1,36 @@
+; Eight bit driver
+;
+; Every clock cycle will pull 8 bits from OSR and write to GPIO pins
+
+.program eightbit
+
+.wrap_target
+    out pins 8
+.wrap
+
+% c-sdk {
+
+void eightbit_program_init(PIO pio, uint sm, uint offset, uint pin) {
+    pio_sm_config c = blink_program_get_default_config(offset);
+
+    // initialise 8 GPIO pins as output
+    for (int off = 0; off < 8; off++) {
+        pio_gpio_init(pio, pin + off);
+    }
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 8, true);
+    sm_config_set_out_pins(&c, pin, 8);
+
+    // join TX and RX FIFO to double TX FIFO
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);
+
+    // leave clock as-is - for 100 MHz operation etc. can adjust
+    sm_config_set_clkdiv_int_frac(&c, 1, 0);
+
+    // configure auto-pull etc.
+    sm_config_set_out_shift(&c, true, true, 32);
+
+    pio_sm_init(pio, sm, offset, &c);
+}
+
+%}
+
