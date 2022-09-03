@@ -11,7 +11,7 @@
 % c-sdk {
 
 void eightbit_program_init(PIO pio, uint sm, uint offset, uint pin) {
-    pio_sm_config c = blink_program_get_default_config(offset);
+    pio_sm_config c = eightbit_program_get_default_config(offset);
 
     // initialise 8 GPIO pins as output
     for (int off = 0; off < 8; off++) {
