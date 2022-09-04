@@ -77,7 +77,7 @@ int main() {
                           (const volatile void *)data, SIZE / 4, false);
     dma_channel_wait_for_finish_blocking(dma_a);
 
-    // (re-) configure A, wait for B
+    // (re-)configure A, wait for B
     dma_channel_configure(dma_a, &dmc_a, (volatile void *)&(pio->txf[sm]),
                           (const volatile void *)data, SIZE / 4, false);
     dma_channel_wait_for_finish_blocking(dma_b);

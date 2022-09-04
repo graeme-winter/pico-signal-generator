@@ -65,7 +65,7 @@ Where assignment followed by copying was chosen to avoid errors in `sin(t)` calc
 
 ## Evaluation
 
-Driving the DAC with a sime wave, and watching the MSB GPIO output (which should therefore be high for half of the cycle) shows that there is some signal attenuation:
+Driving the DAC with a sine wave, and watching the MSB GPIO output (which should therefore be high for half of the cycle) shows that there is some signal attenuation:
 
 ![Oscilloscope output sine wave](./F0057TEK.png)
 
