@@ -7,7 +7,7 @@ Deterministic time signal generator - 8 bit output at up to 125 MHz into a resis
 
 ## Wiring
 
-![R-2R Ladder]()./r-2r-dac.png)
+![R-2R Ladder](./r-2r-dac.png)
 
 The physical wiring simply requires a number of resistors at pretty good tolerance: the accuracy of the DAC is determined in part by the [tolerance of the resistors](https://en.wikipedia.org/wiki/Resistor_ladder). As in diagram I chose to use 1kΩ to limit the current from the GPIO pins to ~ mA. In reality the GPIO voltages for low and high are relatively "noisy" so the precision you will get with this DAC is pretty limited.
 
