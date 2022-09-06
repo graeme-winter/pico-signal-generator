@@ -83,3 +83,7 @@ Simply driving the program with a square wave (`0x00` / `0xFF` output) at 1MHz s
 ![Oscilloscope output square wave](./F0051TEK.png)
 
 Fitting of this curve in `gnuplot` identified that there is capacitance in the circuit such that `RC=1e-7` or so, indicating that the stray capacitance is around 100pF. In practical terms this attenuates the output significantly at around 1MHz but seems to cause very little problem an order of magnitude slower than this.
+
+Slowing to 100 kHz and making the adjustments above to the slew rate and current gave a much improved result:
+
+![Oscilloscope sine wave](./F0062TEK.png)
