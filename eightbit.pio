@@ -13,9 +13,11 @@
 void eightbit_program_init(PIO pio, uint sm, uint offset, uint pin) {
     pio_sm_config c = eightbit_program_get_default_config(offset);
 
-    // initialise 8 GPIO pins as output
+    // initialise 8 GPIO pins as output rated at 2mA
     for (int off = 0; off < 8; off++) {
         pio_gpio_init(pio, pin + off);
+        gpio_set_drive_strength(pin + off, GPIO_DRIVE_STRENGTH_2MA);
+        gpio_set_slew_rate(pin + off, GPIO_SLEW_RATE_SLOW);
     }
     pio_sm_set_consecutive_pindirs(pio, sm, pin, 8, true);
     sm_config_set_out_pins(&c, pin, 8);
