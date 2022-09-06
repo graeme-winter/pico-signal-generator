@@ -32,6 +32,8 @@ void eightbit_program_init(PIO pio, uint sm, uint offset, uint pin) {
     // initialise 8 GPIO pins as output
     for (int off = 0; off < 8; off++) {
         pio_gpio_init(pio, pin + off);
+        gpio_set_drive_strength(pin + off, GPIO_DRIVE_STRENGTH_2MA);
+        gpio_set_slew_rate(pin + off, GPIO_SLEW_RATE_SLOW);
     }
     pio_sm_set_consecutive_pindirs(pio, sm, pin, 8, true);
     sm_config_set_out_pins(&c, pin, 8);
@@ -49,7 +51,14 @@ void eightbit_program_init(PIO pio, uint sm, uint offset, uint pin) {
 }
 ```
 
-Essentially assigning `pin` to `pin+7` GPIO to be out (from LSB to MSB; wire as above) and joining the RX FIFO onto the TX FIFO, and enabling auto-pull. The work here is keeping the TX FIFO fed. For this I used two DMA channels in a tick / tock configuration reading from the same 100kB buffer. For a 1MHz output signal with the default configuration as above you have 125 points for each cycle - thus copied a number of times to reduce the number of DMA transfer configuration steps needed. In this case it was set up with
+Essentially assigning `pin` to `pin+7` GPIO to be out (from LSB to MSB; wire as above) with some additional settings for the output current (lower than default, minimal number of amplifier stages involved which helps reduce noise) and lowered the slew rate, which reduced the "overshoot" on transitioning from low to high and vice versa, again reducing the noise, with:
+
+```C
+        gpio_set_drive_strength(pin + off, GPIO_DRIVE_STRENGTH_2MA);
+        gpio_set_slew_rate(pin + off, GPIO_SLEW_RATE_SLOW);
+```
+
+I also joined the RX FIFO onto the TX FIFO, but not sure how useful this is, and enabled auto-pull. The work here is keeping the TX FIFO fed. For this I used two DMA channels in a tick / tock configuration reading from the same 100kB buffer. For a 1MHz output signal with the default configuration as above you have 125 points for each cycle - thus copied a number of times to reduce the number of DMA transfer configuration steps needed. In this case it was set up with
 
 ```C
   for (int j = 0; j < 125; j++) {
