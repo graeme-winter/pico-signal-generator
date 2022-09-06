@@ -22,16 +22,16 @@ int main() {
   uint offset = pio_add_program(pio, &eightbit_program);
 
   // set up data array - SIZE elements to allow time for DMA restart
-  // 2 * pi / 125. to give 1 MHz
+  // 2 * pi / 1250. to give 100 kHz
 
   uint8_t data[SIZE];
 
-  for (int j = 0; j < 125; j++) {
-    data[j] = 127 + 128 * sin(2 * M_PI * j / 125.);
+  for (int j = 0; j < 1250; j++) {
+    data[j] = 127 + 128 * sin(2 * M_PI * j / 1250.);
   }
 
-  for (int j = 1; j < (SIZE / 125); j++) {
-    memcpy(data + 125 * j, data, 125);
+  for (int j = 1; j < (SIZE / 1250); j++) {
+    memcpy(data + 1250 * j, data, 1250);
   }
 
   printf("Init\n");
