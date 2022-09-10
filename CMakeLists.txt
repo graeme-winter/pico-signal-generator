@@ -14,6 +14,7 @@ pico_sdk_init()
 add_executable(signal_generator signal_generator.c)
 
 pico_generate_pio_header(signal_generator ${CMAKE_CURRENT_LIST_DIR}/eightbit.pio)
+pico_generate_pio_header(signal_generator ${CMAKE_CURRENT_LIST_DIR}/clock.pio)
 
 pico_set_program_name(signal_generator "signal_generator")
 pico_set_program_version(signal_generator "0.1")
