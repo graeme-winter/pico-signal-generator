@@ -56,7 +56,12 @@ int main() {
   uint8_t data[SIZE];
 
   for (int j = 0; j < 1250; j++) {
-    data[j] = 127 + 128 * sin(2 * M_PI * j / 1250.);
+    //data[j] = 127 + 128 * sin(2 * M_PI * j / 1250.);
+    if (j < 625) {
+      data[j] = 255;
+    } else {
+      data[j] = 0;
+    }
   }
 
   for (int j = 1; j < (SIZE / 1250); j++) {
@@ -95,7 +100,6 @@ int main() {
                         (const volatile void *)data, SIZE / 4, false);
 
   pio_enable_sm_mask_in_sync(pio, 1<<sm_dac|1<<sm_clk);
-  //pio_sm_set_enabled(pio, sm_dac, true);
   printf("PIO started\n");
 
   dma_channel_start(dma_a);
