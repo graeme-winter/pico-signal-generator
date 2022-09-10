@@ -11,7 +11,7 @@
 
 int main() {
 
-  static const uint led_pin = 2;
+  static const uint dac0 = 2;
 
   PIO pio = pio0;
 
@@ -35,7 +35,7 @@ int main() {
   }
 
   printf("Init\n");
-  eightbit_program_init(pio, sm, offset, led_pin);
+  eightbit_program_init(pio, sm, offset, dac0);
 
   // set up DMA
   uint32_t dma_a, dma_b;
