@@ -10,6 +10,27 @@
 
 #define SIZE 100000
 
+uint clock(PIO pio, uint sm, uint pin, uint32_t high, uint32_t low) {
+
+  uint32_t offset;
+
+  offset = pio_add_program(pio, &clock_program);
+  clock_program_init(pio, sm, offset, pin, 1, 0);
+
+  // intrinsic delays - these are certainly 3 cycles
+  high -= 3;
+  low -= 3;
+
+  // load low into OSR then copy to ISR
+  pio->txf[sm] = low;
+  pio_sm_exec(pio, sm, pio_encode_pull(false, false));
+  pio_sm_exec(pio, sm, pio_encode_out(pio_isr, 32));
+
+  // load high into OSR
+  pio->txf[sm] = high;
+  pio_sm_exec(pio, sm, pio_encode_pull(false, false));
+}
+
 int main() {
 
   // 0th dac pin -> LSB -> 2...9 inclusive used for DAC output
@@ -26,7 +47,8 @@ int main() {
   uint sm_clk = pio_claim_unused_sm(pio, true);
 
   uint off_dac = pio_add_program(pio, &eightbit_program);
-  uint off_clk = pio_add_program(pio, &clock_program);
+
+  uint off_clk = clock(pio, sm_clk, dact, 625, 625);
 
   // set up data array - SIZE elements to allow time for DMA restart
   // 2 * pi / 1250. to give 100 kHz
@@ -72,7 +94,8 @@ int main() {
   dma_channel_configure(dma_a, &dmc_a, (volatile void *)&(pio->txf[sm_dac]),
                         (const volatile void *)data, SIZE / 4, false);
 
-  pio_sm_set_enabled(pio, sm_dac, true);
+  pio_enable_sm_mask_in_sync(pio, 1<<sm_dac|1<<sm_clk);
+  //pio_sm_set_enabled(pio, sm_dac, true);
   printf("PIO started\n");
 
   dma_channel_start(dma_a);
@@ -89,34 +112,4 @@ int main() {
                           (const volatile void *)data, SIZE / 4, false);
     dma_channel_wait_for_finish_blocking(dma_b);
   }
-}
-
-// with-delay timer program - input times are in µs
-uint32_t clock(PIO pio, uint sm, uint pin, uint32_t high, uint32_t low, bool enable) {
-  // set clock divider to give ~ 0.2µs / tick (i.e. /= 25 for pico default
-  // of 125 MHz clock)
-
-  uint32_t offset;
-
-  high *= 5;
-  low *= 5;
-
-  offset = pio_add_program(pio, &clock_program);
-  clock_program_init(pio, sm, offset, pin, 25, 0);
-
-  // intrinsic delays - these are certainly 3 cycles
-  high -= 3;
-  low -= 3;
-
-  // load low into OSR then copy to ISR
-  pio->txf[sm] = low;
-  pio_sm_exec(pio, sm, pio_encode_pull(false, false));
-  pio_sm_exec(pio, sm, pio_encode_out(pio_isr, 32));
-
-  // load high into OSR
-  pio->txf[sm] = high;
-  pio_sm_exec(pio, sm, pio_encode_pull(false, false));
-
-  // optionally enable
-  pio_sm_set_enabled(pio, sm, enable);
 }
