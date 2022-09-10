@@ -99,11 +99,11 @@ int main() {
   dma_channel_configure(dma_a, &dmc_a, (volatile void *)&(pio->txf[sm_dac]),
                         (const volatile void *)data, SIZE / 4, false);
 
-  pio_enable_sm_mask_in_sync(pio, 1<<sm_dac|1<<sm_clk);
-  printf("PIO started\n");
-
   dma_channel_start(dma_a);
   printf("DMA started\n");
+
+  pio_enable_sm_mask_in_sync(pio, 1<<sm_dac|1<<sm_clk);
+  printf("PIO started\n");
 
   while (true) {
     // (re-)configure B, wait for A
