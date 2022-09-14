@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "eightbit.pio.h"
 #include "clock.pio.h"
+#include "eightbit.pio.h"
 #include "hardware/dma.h"
 #include "hardware/pio.h"
 #include "pico/stdlib.h"
 
-#define SIZE 100000
+#define SIZE 125000
 
 uint clock(PIO pio, uint sm, uint pin, uint32_t high, uint32_t low) {
 
@@ -48,24 +48,17 @@ int main() {
 
   uint off_dac = pio_add_program(pio, &eightbit_program);
 
-  uint off_clk = clock(pio, sm_clk, dact, 625, 625);
+  uint off_clk = clock(pio, sm_clk, dact, 62500, 62500);
 
   // set up data array - SIZE elements to allow time for DMA restart
   // 2 * pi / 1250. to give 100 kHz
 
   uint8_t data[SIZE];
 
-  for (int j = 0; j < 1250; j++) {
-    //data[j] = 127 + 128 * sin(2 * M_PI * j / 1250.);
-    if (j < 625) {
-      data[j] = 255;
-    } else {
-      data[j] = 0;
-    }
-  }
-
-  for (int j = 1; j < (SIZE / 1250); j++) {
-    memcpy(data + 1250 * j, data, 1250);
+  for (int j = 0; j < 125000; j++) {
+    data[j] =
+        127 + 128 * (sin(2 * M_PI * j / 1250.) * sin(2 * M_PI * j / 12500.) *
+                     sin(2 * M_PI * j / 125000.));
   }
 
   printf("Init\n");
@@ -102,7 +95,7 @@ int main() {
   dma_channel_start(dma_a);
   printf("DMA started\n");
 
-  pio_enable_sm_mask_in_sync(pio, 1<<sm_dac|1<<sm_clk);
+  pio_enable_sm_mask_in_sync(pio, 1 << sm_dac | 1 << sm_clk);
   printf("PIO started\n");
 
   while (true) {
