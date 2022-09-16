@@ -87,3 +87,10 @@ Fitting of this curve in `gnuplot` identified that there is capacitance in the c
 Slowing to 100 kHz and making the adjustments above to the slew rate and current gave a much improved result:
 
 ![Oscilloscope sine wave](./F0062TEK.png)
+
+Adding a "clock" signal GPIO to be used as external trigger (e.g. on oscilloscope) allows much more complex signals to be demonstrated: for example a 1kHz sine wave multiplied by 10, 100 kHz sine waves sampled at 125 MHz:
+
+![Complex wave form](./F0095TEK.png)
+![Complex wave form zoom](./F0096TEK.png)
+![Complex wave form zoom](./F0097TEK.png)
+![Complex wave form zoom](./F0098TEK.png)
